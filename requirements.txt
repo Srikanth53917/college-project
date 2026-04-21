@@ -1,0 +1,7 @@
+pandas
+flask
+numpy
+matplotlib
+scikit-learn
+yfinance
+vaderSentiment
