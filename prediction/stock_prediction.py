@@ -1,28 +1,21 @@
 import numpy as np
-import pandas as pd
-import joblib
 from sklearn.linear_model import LinearRegression
-from sklearn.model_selection import train_test_split
 
 def train_stock_model(data):
-    data = data.copy()
-    data['Prediction'] = data['Close'].shift(-1)
-    data.dropna(inplace=True)
+    data = data.reset_index()
 
-    X = data[['Close']]        # 2D
-    y = data['Prediction']     # 1D
+    data["Day"] = np.arange(len(data))
 
-    X_train, X_test, y_train, y_test = train_test_split(
-        X, y, test_size=0.2, random_state=42
-    )
+    X = data[["Day"]]
+    y = data["Close"]
 
     model = LinearRegression()
-    model.fit(X_train, y_train)
+    model.fit(X, y)
 
-    joblib.dump(model, "models/stock_model.pkl")
-    return model, X_test, y_test
+    return model
 
-def predict_next_day(model, last_close):
-    input_df=pd.DataFrame([[last_close]],columns=['Close'])
-    return model.predict(input_df)[0]
-    
+
+def predict_next_day(model, data):
+    next_day = len(data)
+    prediction = model.predict([[next_day]])
+    return float(prediction[0])
