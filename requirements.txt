@@ -1,8 +1,8 @@
-pandas
 flask
-numpy
-matplotlib
-scikit-learn
 yfinance
+pandas
+numpy
+scikit-learn
+matplotlib
 vaderSentiment
 gunicorn
