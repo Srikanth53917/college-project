@@ -115,17 +115,20 @@
 <!-- ✅ RESULT -->
 {% if result %}
 <div class="card">
-    <h2>{{ result.company }}</h2>
+
+    <h2>{{ request.form.ticker }}</h2>
 
     <p><strong>Last Price:</strong> {{ result.last_price }}</p>
     <p><strong>Predicted Price:</strong> {{ result.predicted_price }}</p>
 
-    <p class="{{ result.sentiment_class }}">
+    <p>
         <strong>Sentiment:</strong> {{ result.sentiment }}
     </p>
 
-    <h3>Recommendation: {{ result.decision }}</h3>
+    <h3>Recommendation: {{ result.recommendation }}</h3>
+
 </div>
+
 
 <!-- ✅ CHARTS -->
 <div>
