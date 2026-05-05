@@ -50,7 +50,7 @@ def home():
 
             # 🧠 Sentiment
             try:
-                sentiment_score = analyze_sentiment_from_dataset(ticker)
+                sentiment_score = analyze_sentiment_from_dataset(start_year,end_year)
             except Exception as e:
                 print("Sentiment error:", e)
                 sentiment_score = 0
