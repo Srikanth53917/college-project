@@ -33,7 +33,7 @@ def plot_stock_chart(data):
 
 
 # 📊 SENTIMENT ANALYSIS CHART
-def plot_sentiment_chart(sentiment_counts):
+def plot_sentiment_chart(score):
     try:
         plt.figure(figsize=(6, 4))
 
