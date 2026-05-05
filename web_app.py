@@ -68,8 +68,8 @@ def home():
 
             # 📈 Charts
             try:
-                stock_chart = plot_stock_chart(data, ticker)
-                sentiment_img = plot_sentiment_chart(sentiment_counts)
+                stock_chart =stock_price_chart(data)
+                sentiment_img =sentiment_chart(scores)
             except Exception as e:
                 print("Chart error:", e)
                 stock_chart = None
