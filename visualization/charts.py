@@ -1,40 +1,65 @@
+import matplotlib
+matplotlib.use('Agg')   # Required for server
+
 import matplotlib.pyplot as plt
 import os
 
-def stock_price_chart(data, ticker):
-    try:
-        plt.figure(figsize=(8,4))
-        plt.plot(data['Close'], label='Close Price')
-        plt.title(f"{ticker} Stock Price")
-        plt.legend()
+# Ensure static folder exists
+STATIC_FOLDER = "static"
+os.makedirs(STATIC_FOLDER, exist_ok=True)
 
-        path = "static/stock_chart.png"
-        plt.savefig(path)
+
+# 📈 STOCK PRICE CHART
+def plot_stock_chart(data):
+    try:
+        plt.figure(figsize=(10, 5))
+
+        plt.plot(data['Close'], label='Close Price', color='blue')
+
+        plt.title("Stock Price Trend")
+        plt.xlabel("Date")
+        plt.ylabel("Price")
+        plt.legend()
+        plt.grid(True)
+
+        # Save image
+        file_path = os.path.join(STATIC_FOLDER, "stock_chart.png")
+        plt.savefig(file_path)
         plt.close()
 
-        return path
+        return file_path
+
     except Exception as e:
-        print("Chart error:", e)
+        print("Error in plot_stock_chart:", e)
         return None
 
 
-def sentiment_chart(sentiment_score):
+# 📊 SENTIMENT ANALYSIS CHART
+def plot_sentiment_chart(sentiment_counts):
     try:
-        labels = ['Negative', 'Neutral', 'Positive']
+        plt.figure(figsize=(6, 4))
+
+        labels = ['Positive', 'Negative', 'Neutral']
         values = [
-            max(0, -sentiment_score),
-            1 - abs(sentiment_score),
-            max(0, sentiment_score)
+            sentiment_counts.get('positive', 0),
+            sentiment_counts.get('negative', 0),
+            sentiment_counts.get('neutral', 0)
         ]
 
-        plt.figure(figsize=(5,5))
-        plt.pie(values, labels=labels, autopct='%1.1f%%')
+        colors = ['green', 'red', 'orange']
+        plt.bar(labels, values, color=colors)
 
-        path = "static/sentiment_chart.png"
-        plt.savefig(path)
+        plt.title("Sentiment Analysis")
+        plt.xlabel("Sentiment")
+        plt.ylabel("Count")
+
+        # Save image
+        file_path = os.path.join(STATIC_FOLDER, "sentiment_chart.png")
+        plt.savefig(file_path)
         plt.close()
 
-        return path
+        return file_path
+
     except Exception as e:
-        print("Sentiment chart error:", e)
+        print("Error in plot_sentiment_chart:", e)
         return None
