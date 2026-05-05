@@ -6,7 +6,6 @@ import time
 
 from prediction.stock_prediction import train_stock_model, predict_next_day
 from sentiment.sentiment_analysis import analyze_sentiment_from_dataset
-
 from visualization.charts import stock_price_chart, sentiment_chart
 
 app = Flask(__name__)
@@ -24,66 +23,65 @@ def home():
             start_date = f"{start_year}-01-01"
             end_date = f"{end_year}-12-31"
 
-            # 🔥 IMPORTANT: Delay to avoid rate limit
+            # Delay to avoid rate limit
             time.sleep(3)
 
-            # 📊 Fetch stock data
+            # Fetch stock data
             data = yf.download(ticker, start=start_date, end=end_date)
 
             if data.empty:
                 result = {"error": "Invalid stock symbol or no data available"}
                 return render_template("index.html", result=result)
 
-            # 💰 Last price
+            # Last price
             try:
                 last_price = float(data["Close"].iloc[-1])
             except:
                 last_price = 0
 
-            # 🤖 Prediction
+            # Prediction — unpack all 3 return values
             try:
-                model = train_stock_model(data)
-                predicted_price = float(predict_next_day(model, data))
+                model, X_test, y_test = train_stock_model(data)
+                last_close = float(data["Close"].iloc[-1])
+                predicted_price = float(predict_next_day(model, last_close))
             except Exception as e:
                 print("Prediction error:", e)
                 predicted_price = last_price
 
-            # 🧠 Sentiment
+            # Sentiment — unpack (sentiment, scores)
             try:
-                sentiment_score = analyze_sentiment_from_dataset(start_year,end_year)
+                sentiment, scores = analyze_sentiment_from_dataset(start_year, end_year)
             except Exception as e:
                 print("Sentiment error:", e)
-                sentiment_score = 0
+                sentiment = "NEUTRAL"
+                scores = {"positive": 1, "negative": 1, "neutral": 1}
 
-            # 📊 Sentiment logic
-            if sentiment_score > 0:
-                sentiment = "Positive"
+            # Recommendation based on sentiment
+            if sentiment == "POSITIVE":
                 recommendation = "Buy"
-            elif sentiment_score < 0:
-                sentiment = "Negative"
+                sentiment_class = "positive"
+            elif sentiment == "NEGATIVE":
                 recommendation = "Sell"
+                sentiment_class = "negative"
             else:
-                sentiment = "Neutral"
                 recommendation = "Hold"
+                sentiment_class = "neutral"
 
-            # 📈 Charts
+            # Charts
             try:
-                stock_chart =stock_price_chart(data)
-                sentiment_img =sentiment_chart(scores)
+                stock_price_chart(data)
+                sentiment_chart(scores)
             except Exception as e:
                 print("Chart error:", e)
-                stock_chart = None
-                sentiment_img = None
 
-            # ✅ FINAL RESULT
+            # Final result
             result = {
                 "company": ticker,
                 "last_price": round(last_price, 2),
                 "predicted_price": round(predicted_price, 2),
                 "sentiment": sentiment,
-                "recommendation": recommendation,
-                "stock_chart": stock_chart,
-                "sentiment_chart": sentiment_img
+                "sentiment_class": sentiment_class,
+                "decision": recommendation,
             }
 
         except Exception as e:
