@@ -9,7 +9,7 @@ STATIC_FOLDER = "static"
 os.makedirs(STATIC_FOLDER, exist_ok=True)
 
 
-def plot_stock_chart(data):
+def plot_stock_chart(data,ticker):
     plt.figure(figsize=(10, 5))
     plt.plot(data['Close'])
     plt.title("Stock Price Trend")
