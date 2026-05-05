@@ -29,6 +29,10 @@ def home():
             # Fetch stock data
             data = yf.download(ticker, start=start_date, end=end_date)
 
+            # Fix for yfinance MultiIndex columns (yfinance v0.2+)
+            if isinstance(data.columns, pd.MultiIndex):
+                data.columns = data.columns.get_level_values(0)
+
             if data.empty:
                 result = {"error": "Invalid stock symbol or no data available"}
                 return render_template("index.html", result=result)
@@ -36,10 +40,12 @@ def home():
             # Last price
             try:
                 last_price = float(data["Close"].iloc[-1])
-            except:
+                print("Last price fetched:", last_price)
+            except Exception as e:
+                print("Price fetch error:", e)
                 last_price = 0
 
-            # Prediction — unpack all 3 return values
+            # Prediction
             try:
                 model, X_test, y_test = train_stock_model(data)
                 last_close = float(data["Close"].iloc[-1])
@@ -48,7 +54,7 @@ def home():
                 print("Prediction error:", e)
                 predicted_price = last_price
 
-            # Sentiment — unpack (sentiment, scores)
+            # Sentiment
             try:
                 sentiment, scores = analyze_sentiment_from_dataset(start_year, end_year)
             except Exception as e:
