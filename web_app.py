@@ -6,7 +6,7 @@ import time
 
 from prediction.stock_prediction import train_stock_model, predict_next_day
 from sentiment.sentiment_analysis import analyze_sentiment_from_dataset
-from visualization.charts import stock_price_chart, sentiment_chart
+from visualization.charts import plot_stock_chart, plot_sentiment_chart
 
 app = Flask(__name__)
 
