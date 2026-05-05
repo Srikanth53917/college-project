@@ -1,42 +1,41 @@
 import matplotlib
-matplotlib.use('Agg')
+matplotlib.use('Agg')   # Fix server issue
 
 import matplotlib.pyplot as plt
-import os
-import time
-
-STATIC_FOLDER = "static"
-os.makedirs(STATIC_FOLDER, exist_ok=True)
 
 
-def plot_stock_chart(data,ticker):
-    plt.figure(figsize=(10, 5))
+def stock_price_chart(data):
+    plt.figure()
     plt.plot(data['Close'])
     plt.title("Stock Price Trend")
     plt.xlabel("Date")
     plt.ylabel("Price")
 
-    file_path = os.path.join(STATIC_FOLDER, f"stock_{int(time.time())}.png")
-    plt.savefig(file_path)
+    plt.savefig("static/stock_chart.png")
+
+    # OPTIONAL popup (comment if not needed)
+    # plt.show()
+
     plt.close()
 
-    return file_path
 
+def sentiment_chart(scores):
+    plt.figure()
 
-def plot_sentiment_chart(sentiment_counts):
-    plt.figure(figsize=(6, 4))
+    # ✅ Fix: handle empty or wrong data
+    if not isinstance(scores, dict) or sum(scores.values()) == 0:
+        print("⚠️ Using fallback sentiment data")
+        scores = {"positive": 1, "negative": 1, "neutral": 1}
 
-    labels = ['Positive', 'Negative', 'Neutral']
-    values = [
-        sentiment_counts.get('positive', 0),
-        sentiment_counts.get('negative', 0),
-        sentiment_counts.get('neutral', 0)
-    ]
+    labels = list(scores.keys())
+    values = list(scores.values())
 
     plt.bar(labels, values)
+    plt.title("Sentiment Analysis")
 
-    file_path = os.path.join(STATIC_FOLDER, f"sentiment_{int(time.time())}.png")
-    plt.savefig(file_path)
+    plt.savefig("static/sentiment_chart.png")
+
+    # OPTIONAL popup
+    # plt.show()
+
     plt.close()
-
-    return file_path
